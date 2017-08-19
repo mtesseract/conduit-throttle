@@ -1,0 +1,47 @@
+name: conduit-throttle
+version: '0.1.0.0'
+category: Data
+author: Moritz Schulte
+maintainer: mtesseract@silverratio.net
+copyright: (c) 2017 Moritz Schulte
+license: BSD3
+github: githubuser/conduit-throttle
+ghc-options:
+- -Wall
+- -threaded
+extra-source-files:
+- README.md
+dependencies:
+- base >=4.7 && <5
+- conduit
+- conduit-combinators
+- conduit-extra
+- stm-conduit
+- stm-chans
+- stm
+- resourcet
+- async
+- unliftio
+- unliftio-core
+- io-throttle
+- resourcet
+library:
+  source-dirs: src
+  exposed-modules:
+  - Data.Conduit.Throttle
+tests:
+  conduit-test:
+    main: Test.hs
+    source-dirs: tests/Data/Conduit/Throttle
+    default-extensions:
+    - OverloadedStrings
+    ghc-options:
+    - -Wall
+    dependencies:
+    - base >=4.7 && <5
+    - HUnit
+    - test-framework
+    - test-framework-hunit
+    - criterion
+    - conduit-throttle
+    - io-throttle

@@ -1,0 +1,10 @@
+resolver: lts-9.1
+packages:
+- '.'
+- location:
+    git: https://github.com/mtesseract/io-throttle.git
+    commit: 90440c3de31ab13eaeaed5f14604e78ed9dbb800
+  extra-dep: true
+extra-deps: []
+flags: {}
+extra-package-dbs: []
