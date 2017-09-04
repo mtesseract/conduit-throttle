@@ -1,5 +1,9 @@
 name: conduit-throttle
 version: '0.2.0.0'
+synopsis: Throttle Conduit Producers
+description: This packages is based on the throttle-io-stream package
+             and provides functionality for throttling Conduit
+             producers according to a provided configuration.
 category: Data
 author: Moritz Schulte
 maintainer: mtesseract@silverratio.net
@@ -8,7 +12,6 @@ license: BSD3
 github: mtesseract/conduit-throttle
 ghc-options:
 - -Wall
-- -threaded
 extra-source-files:
 - README.md
 dependencies:
@@ -16,7 +19,6 @@ dependencies:
 - conduit
 - conduit-combinators
 - conduit-extra
-- stm-conduit
 - stm-chans
 - stm
 - resourcet
@@ -43,7 +45,6 @@ tests:
     - HUnit
     - test-framework
     - test-framework-hunit
-    - criterion
     - conduit-throttle
     - throttle-io-stream
     - stm-conduit
