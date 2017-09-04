@@ -2,7 +2,7 @@
 
 ### About
 
-This is `conduit-throttle`, a small Haskell package providing
+This is `conduit-throttle`, a compact Haskell package providing
 configurable throttling support for Conduit. It is built on top of the
 packages `throttle-io-stream` and `unliftio`.
 
@@ -24,17 +24,17 @@ return a new Conduit `Producer`, which yields the same stream of
 values like the provided one but throttled according to the provided
 throttling configuration.
 
-A throttling configuration is created using `newConf and then
+A throttling configuration is created using `newConf` and then
 configured using the functions `setMeasure`, `setMaxThroughput`,
 `setBufferSize` and others.
 
 Primarily, the throughput is defined by the provided measure function
 and the configured maximum throughput. A measure function is a
-function which defines how "big" a conduit element `a` is. In other
+function which defines how "big" a Conduit element `a` is. In other
 words, it is a function of type `a -> Double`. For instance, it could
-simply calculate the length of some deserialized value or it could
-simply be the constant function `const 1` when it is simply desired to
-throttle the number of elements a Conduit producer produces. The
+simply calculate the length of some deserialized value in bytes or it
+could simply be the constant function `const 1` in case it is desired
+to throttle the number of elements a Conduit producer produces. The
 maximum throughput together with the measure function then defines the
 maximum throughput to produce (of course it can be less, if the
 original producer provides data with a smaller throughput). The
