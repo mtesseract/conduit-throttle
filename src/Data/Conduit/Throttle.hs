@@ -1,22 +1,102 @@
 {-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes        #-}
+{-# LANGUAGE RecordWildCards   #-}
 
-module Data.Conduit.Throttle where
+module Data.Conduit.Throttle
+  ( ConduitThrottleConf
+  , newConf
+  , setMeasure
+  , setInterval
+  , setMaxThroughput
+  , setBufferSize
+  , setEmaAlpha
+  , throttleProducer
+  ) where
 
 import           Conduit
 import           Control.Concurrent.STM
 import           Control.Concurrent.STM.TBMQueue
-import           Control.Concurrent.Throttle     (ThrottleConf)
 import qualified Control.Concurrent.Throttle     as Throttle
 import           Control.Monad.Trans.Resource
+import           Data.Function
 import           UnliftIO
 
+data ConduitThrottleConf a = ConduitThrottleConf
+  { _measure       :: Throttle.Measure a
+  , _interval      :: Double
+  , _maxThroughput :: Double
+  , _bufferSize    :: Int
+  , _emaAlpha      :: Double
+  }
+
+newConf :: ConduitThrottleConf a
+newConf = defaultConf
+
+-- | Default 'ThrottleConf'.
+defaultConf :: ConduitThrottleConf a
+defaultConf = ConduitThrottleConf
+  { _measure       = const 1
+  , _interval      = 1000
+  , _maxThroughput = 100
+  , _bufferSize    = 1024
+  , _emaAlpha      = defaultEmaAlpha }
+
+-- | Set measure function in configuration.
+setMeasure :: Throttle.Measure a
+           -> ConduitThrottleConf a
+           -> ConduitThrottleConf a
+setMeasure measure conf = conf { _measure = measure }
+
+-- | Set interval in configuration.
+setInterval :: Double
+            -> ConduitThrottleConf a
+            -> ConduitThrottleConf a
+setInterval interval conf = conf { _interval = interval }
+
+-- | Set max throughput in configuration.
+setMaxThroughput :: Double
+                 -> ConduitThrottleConf a
+                 -> ConduitThrottleConf a
+setMaxThroughput throughput conf =
+  conf { _maxThroughput = throughput }
+
+-- | Set buffer size in configuration.
+setBufferSize :: Int
+              -> ConduitThrottleConf a
+              -> ConduitThrottleConf a
+setBufferSize n conf = conf { _bufferSize = n }
+
+-- | Set exponential weight factor used for computing current item
+-- size.
+setEmaAlpha :: Double
+            -> ConduitThrottleConf a
+            -> ConduitThrottleConf a
+setEmaAlpha alpha conf = conf { _emaAlpha = alpha }
+
+-- | Default exponential weight factor for computing current item
+-- size.
+defaultEmaAlpha :: Double
+defaultEmaAlpha = 0.5
+
+throttleConfPrepare :: ConduitThrottleConf a -> Throttle.ThrottleConf a
+throttleConfPrepare ConduitThrottleConf { .. } = Throttle.newThrottleConf
+  & Throttle.throttleConfThrottleProducer
+  & Throttle.throttleConfSetMeasure _measure
+  & Throttle.throttleConfSetInterval _interval
+  & Throttle.throttleConfSetMaxThroughput _maxThroughput
+  & Throttle.throttleConfSetBufferSize _bufferSize
+  & Throttle.throttleConfSetEmaAlpha _emaAlpha
+
+-- | Given a 'ThrottleConf' and a 'Producer', create and return a new
+-- 'Producer', which yields the same stream of values like the
+-- provided producer but throttled according to the provided
+-- throttling configuration.
 throttleProducer :: (MonadUnliftIO m, MonadResource m)
-                 => ThrottleConf Int
-                 -> Producer m Int
-                 -> Producer m Int
-throttleProducer throttleConf producer = do
+                 => ConduitThrottleConf a
+                 -> Producer m a
+                 -> Producer m a
+throttleProducer conf producer = do
   (UnliftIO unlifter) <- lift askUnliftIO
   queueIn  <- liftIO $ newTBMQueueIO 1024
   queueOut <- liftIO $ newTBMQueueIO 1
@@ -24,7 +104,7 @@ throttleProducer throttleConf producer = do
     (UnliftIO.async (unlifter (runConduit (producer .| drainConduit queueIn))))
     UnliftIO.cancel
 
-  let
+  let throttleConf  = throttleConfPrepare conf
       readCallback  = atomically (readTBMQueue queueIn)
       writeCallback = \case
         Just a  -> atomically $ writeTBMQueue queueOut a
