@@ -4,7 +4,7 @@
 {-# LANGUAGE RecordWildCards   #-}
 
 module Data.Conduit.Throttle
-  ( ConduitThrottleConf
+  ( Conf
   , newConf
   , setMeasure
   , setInterval
@@ -22,7 +22,7 @@ import           Control.Monad.Trans.Resource
 import           Data.Function
 import           UnliftIO
 
-data ConduitThrottleConf a = ConduitThrottleConf
+data Conf a = Conf
   { _measure       :: Throttle.Measure a
   , _interval      :: Double
   , _maxThroughput :: Double
@@ -30,12 +30,12 @@ data ConduitThrottleConf a = ConduitThrottleConf
   , _emaAlpha      :: Double
   }
 
-newConf :: ConduitThrottleConf a
+newConf :: Conf a
 newConf = defaultConf
 
 -- | Default 'ThrottleConf'.
-defaultConf :: ConduitThrottleConf a
-defaultConf = ConduitThrottleConf
+defaultConf :: Conf a
+defaultConf = Conf
   { _measure       = const 1
   , _interval      = 1000
   , _maxThroughput = 100
@@ -44,34 +44,34 @@ defaultConf = ConduitThrottleConf
 
 -- | Set measure function in configuration.
 setMeasure :: Throttle.Measure a
-           -> ConduitThrottleConf a
-           -> ConduitThrottleConf a
+           -> Conf a
+           -> Conf a
 setMeasure measure conf = conf { _measure = measure }
 
 -- | Set interval in configuration.
 setInterval :: Double
-            -> ConduitThrottleConf a
-            -> ConduitThrottleConf a
+            -> Conf a
+            -> Conf a
 setInterval interval conf = conf { _interval = interval }
 
 -- | Set max throughput in configuration.
 setMaxThroughput :: Double
-                 -> ConduitThrottleConf a
-                 -> ConduitThrottleConf a
+                 -> Conf a
+                 -> Conf a
 setMaxThroughput throughput conf =
   conf { _maxThroughput = throughput }
 
 -- | Set buffer size in configuration.
 setBufferSize :: Int
-              -> ConduitThrottleConf a
-              -> ConduitThrottleConf a
+              -> Conf a
+              -> Conf a
 setBufferSize n conf = conf { _bufferSize = n }
 
 -- | Set exponential weight factor used for computing current item
 -- size.
 setEmaAlpha :: Double
-            -> ConduitThrottleConf a
-            -> ConduitThrottleConf a
+            -> Conf a
+            -> Conf a
 setEmaAlpha alpha conf = conf { _emaAlpha = alpha }
 
 -- | Default exponential weight factor for computing current item
@@ -79,8 +79,8 @@ setEmaAlpha alpha conf = conf { _emaAlpha = alpha }
 defaultEmaAlpha :: Double
 defaultEmaAlpha = 0.5
 
-throttleConfPrepare :: ConduitThrottleConf a -> Throttle.ThrottleConf a
-throttleConfPrepare ConduitThrottleConf { .. } = Throttle.newThrottleConf
+throttleConfPrepare :: Conf a -> Throttle.ThrottleConf a
+throttleConfPrepare Conf { .. } = Throttle.newThrottleConf
   & Throttle.throttleConfThrottleProducer
   & Throttle.throttleConfSetMeasure _measure
   & Throttle.throttleConfSetInterval _interval
@@ -93,7 +93,7 @@ throttleConfPrepare ConduitThrottleConf { .. } = Throttle.newThrottleConf
 -- provided producer but throttled according to the provided
 -- throttling configuration.
 throttleProducer :: (MonadUnliftIO m, MonadResource m)
-                 => ConduitThrottleConf a
+                 => Conf a
                  -> Producer m a
                  -> Producer m a
 throttleProducer conf producer = do
