@@ -1,4 +1,4 @@
-# throttle-conduit [![Hackage version](https://img.shields.io/hackage/v/throttle-conduit.svg?label=Hackage)](https://hackage.haskell.org/package/throttle-conduit) [![Stackage version](https://www.stackage.org/package/throttle-conduit/badge/lts?label=Stackage)](https://www.stackage.org/package/throttle-conduit) [![Build Status](https://travis-ci.org/mtesseract/throttle-conduit.svg?branch=master)](https://travis-ci.org/mtesseract/throttle-conduit)
+# conduit-throttle [![Hackage version](https://img.shields.io/hackage/v/conduit-throttle.svg?label=Hackage)](https://hackage.haskell.org/package/conduit-throttle) [![Stackage version](https://www.stackage.org/package/conduit-throttle/badge/lts?label=Stackage)](https://www.stackage.org/package/conduit-throttle) [![Build Status](https://travis-ci.org/mtesseract/conduit-throttle.svg?branch=master)](https://travis-ci.org/mtesseract/conduit-throttle)
 
 ### About
 
