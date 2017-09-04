@@ -1,11 +1,11 @@
 name: conduit-throttle
-version: '0.1.0.0'
+version: '0.2.0.0'
 category: Data
 author: Moritz Schulte
 maintainer: mtesseract@silverratio.net
 copyright: (c) 2017 Moritz Schulte
 license: BSD3
-github: githubuser/conduit-throttle
+github: mtesseract/conduit-throttle
 ghc-options:
 - -Wall
 - -threaded
@@ -23,7 +23,7 @@ dependencies:
 - async
 - unliftio
 - unliftio-core
-- io-throttle
+- throttle-io-stream
 - resourcet
 library:
   source-dirs: src
@@ -37,6 +37,7 @@ tests:
     - OverloadedStrings
     ghc-options:
     - -Wall
+    - -fno-warn-type-defaults
     dependencies:
     - base >=4.7 && <5
     - HUnit
@@ -44,4 +45,5 @@ tests:
     - test-framework-hunit
     - criterion
     - conduit-throttle
-    - io-throttle
+    - throttle-io-stream
+    - stm-conduit
