@@ -19,7 +19,7 @@ throttleProducer :: (MonadUnliftIO m, MonadResource m)
                  -> Producer m a
 ```
 
-That is, given a `ThrottleConf` and a Conduit `Producer`, create and
+That is, given a configuration and a Conduit `Producer`, create and
 return a new Conduit `Producer`, which yields the same stream of
 values like the provided one but throttled according to the provided
 throttling configuration.
