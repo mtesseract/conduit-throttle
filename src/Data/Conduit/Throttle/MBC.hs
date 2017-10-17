@@ -1,9 +1,10 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes        #-}
 {-# LANGUAGE RecordWildCards   #-}
 
-module Data.Conduit.Throttle
+module Data.Conduit.Throttle.MBC
   ( Conf
   , newConf
   , setMeasure
@@ -17,26 +18,28 @@ module Data.Conduit.Throttle
 import           Conduit
 import           Control.Concurrent.STM
 import           Control.Concurrent.STM.TBMQueue
+import Control.Monad
 import qualified Control.Concurrent.Throttle     as Throttle
 import           Control.Monad.Trans.Resource
 import           Data.Conduit.Throttle.Internal
-import           UnliftIO
+import Control.Concurrent.Async
+import Control.Monad.Trans.Control
 
 -- | Given a 'ThrottleConf' and a 'Producer', create and return a new
 -- 'Producer', which yields the same stream of values like the
 -- provided producer but throttled according to the provided
 -- throttling configuration.
-throttleProducer :: (MonadUnliftIO m, MonadResource m)
+throttleProducer :: forall a m.
+                    (MonadIO m, MonadBaseControl IO m, MonadResource m)
                  => Conf a
                  -> Producer m a
                  -> Producer m a
 throttleProducer conf producer = do
-  (UnliftIO unlifter) <- lift askUnliftIO
   queueIn  <- liftIO $ newTBMQueueIO 1024
   queueOut <- liftIO $ newTBMQueueIO 1
-  (_, _) <- allocate
-    (UnliftIO.async (unlifter (runConduit (producer .| drainConduit queueIn))))
-    UnliftIO.cancel
+  conduitProcess <- lift $ liftBaseWith $ \runInBase ->
+    return $ runInBase $ runConduit (producer .| drainConduit queueIn)
+  void $ allocate (async conduitProcess) cancel
 
   let throttleConf  = throttleConfPrepare conf
       readCallback  = atomically (readTBMQueue queueIn)
@@ -46,8 +49,9 @@ throttleProducer conf producer = do
 
   (_, asyncThrottler) <- allocate
     (Throttle.throttle throttleConf readCallback writeCallback)
-    UnliftIO.cancel
-  link asyncThrottler
+    cancel
+                                            
+  liftIO $ link asyncThrottler
   go queueOut
 
   where go queue = do
