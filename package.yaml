@@ -1,5 +1,5 @@
 name: conduit-throttle
-version: '0.2.0.1'
+version: '0.2.1.0'
 synopsis: Throttle Conduit Producers
 description: This packages is based on the throttle-io-stream package
              and provides functionality for throttling Conduit
@@ -27,14 +27,16 @@ dependencies:
 - unliftio-core
 - throttle-io-stream
 - resourcet
+- monad-control
 library:
   source-dirs: src
   exposed-modules:
   - Data.Conduit.Throttle
+  - Data.Conduit.Throttle.MBC
 tests:
   conduit-test:
-    main: Test.hs
-    source-dirs: tests/Data/Conduit/Throttle
+    main: Tests.hs
+    source-dirs: tests
     default-extensions:
     - OverloadedStrings
     ghc-options:

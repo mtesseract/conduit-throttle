@@ -1,18 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.Conduit.Throttle.Test (tests) where
+module Data.Conduit.Throttle.MBC.Test (tests) where
 
 import           Conduit
 import           Data.Conduit.Async
 import           Data.Conduit.List              (sourceList)
-import qualified Data.Conduit.Throttle          as ConduitThrottle
+import qualified Data.Conduit.Throttle.MBC      as ConduitThrottle
 import           Data.Function                  ((&))
 import           Test.Framework                 (Test, testGroup)
 import           Test.Framework.Providers.HUnit (testCase)
 
 tests :: [Test.Framework.Test]
 tests =
-  [ testGroup "Test Suite [UnliftIO version]"
+  [ testGroup "Test Suite [MonadBaseControl version]"
     [ testCase "Simple producer throttling"
       simpleProducerThrottling
     , testCase "Simple producer throttling (using stm-conduit)"
