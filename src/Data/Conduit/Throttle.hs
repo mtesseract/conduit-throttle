@@ -1,6 +1,5 @@
 {-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RankNTypes        #-}
 {-# LANGUAGE RecordWildCards   #-}
 
 module Data.Conduit.Throttle
@@ -27,9 +26,9 @@ import           UnliftIO
 -- provided producer but throttled according to the provided
 -- throttling configuration.
 throttleProducer :: (MonadUnliftIO m, MonadResource m)
-                 => Conf a
-                 -> Producer m a
-                 -> Producer m a
+                 => Conf o
+                 -> ConduitM () o m ()
+                 -> ConduitM () o m ()
 throttleProducer conf producer = do
   (UnliftIO unlifter) <- lift askUnliftIO
   queueIn  <- liftIO $ newTBMQueueIO 1024
