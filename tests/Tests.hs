@@ -2,13 +2,7 @@
 
 module Main where
 
-import           Conduit
-import           Data.Conduit.Async
-import           Data.Conduit.List              (sourceList)
-import qualified Data.Conduit.Throttle          as ConduitThrottle
-import           Data.Function                  ((&))
-import           Test.Framework                 (Test, defaultMain, testGroup)
-import           Test.Framework.Providers.HUnit (testCase)
+import           Test.Framework                 (Test, defaultMain)
 
 import qualified Data.Conduit.Throttle.MBC.Test
 import qualified Data.Conduit.Throttle.Test

@@ -1,5 +1,5 @@
 name: conduit-throttle
-version: '0.2.1.0'
+version: '0.3.0.0'
 synopsis: Throttle Conduit Producers
 description: This packages is based on the throttle-io-stream package
              and provides functionality for throttling Conduit
