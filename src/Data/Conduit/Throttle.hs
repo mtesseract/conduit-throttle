@@ -14,7 +14,6 @@ module Data.Conduit.Throttle
   ) where
 
 import           Conduit
-import           Control.Concurrent.STM
 import           Control.Concurrent.STM.TBMQueue
 import qualified Control.Concurrent.Throttle     as Throttle
 import           Control.Monad.Trans.Resource
