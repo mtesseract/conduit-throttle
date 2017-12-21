@@ -1,4 +1,4 @@
-resolver: lts-9.11
+resolver: nightly-2017-12-20
 packages:
 - '.'
 extra-deps: [throttle-io-stream-0.2.0.1]
