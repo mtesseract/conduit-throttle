@@ -1,5 +1,5 @@
 name: conduit-throttle
-version: '0.3.0.0'
+version: '0.3.1.0'
 synopsis: Throttle Conduit Producers
 description: This packages is based on the throttle-io-stream package
              and provides functionality for throttling Conduit
@@ -23,7 +23,7 @@ dependencies:
 - stm
 - resourcet
 - async
-- unliftio
+- unliftio >= 0.2.1.0
 - unliftio-core
 - throttle-io-stream
 - resourcet
